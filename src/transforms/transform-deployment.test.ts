@@ -474,25 +474,7 @@ describe("transform GitHub webhook payload to Jira payload", () => {
 					]
 				}
 			]));
-		});
 
-		it(`skip sending commits association in deployment for Cloud when ff is on`, async () => {
-
-			when(booleanFlag).calledWith(BooleanFlags.SKIP_SENDING_COMMIT_ASSOCIATION, expect.anything()).mockResolvedValue(true);
-
-			githubUserTokenNock(DatabaseStateCreator.GITHUB_INSTALLATION_ID);
-			githubUserTokenNock(DatabaseStateCreator.GITHUB_INSTALLATION_ID);
-
-			await cacheSuccessfulDeploymentInfo({
-				gitHubBaseUrl: gitHubClient.baseUrl,
-				repositoryId: deployment_status.payload.repository.id,
-				commitSha: "6e87a40179eb7ecf5094b9c8d690db727472d5bc",
-				env: "Production",
-				createdAt: new Date(new Date(deployment_status.payload.deployment_status.created_at).getTime() - 1000)
-			}, getLogger("deploymentLogger"));
-
-			// Mocking all GitHub API Calls
-			// Get commit
 			githubNock.get(`/repos/${owner.login}/${repoName}/commits/${deployment_status.payload.deployment.sha}`)
 				.reply(200, {
 					...owner,
