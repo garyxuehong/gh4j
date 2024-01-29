@@ -368,12 +368,10 @@ export const transformDeployment = async (
 
 	const allCommitsMessages = extractMessagesFromCommitSummaries(commitSummaries);
 
-	const shouldSkipSendingCommitAssociations = await booleanFlag(BooleanFlags.SKIP_SENDING_COMMIT_ASSOCIATION, jiraHost);
-
 	const associations = mapJiraIssueIdsCommitsAndServicesToAssociationArray(
 		jiraIssueKeyParser(`${deployment.ref}\n${message}\n${allCommitsMessages}`),
 		transformRepositoryId(payload.repository.id, githubInstallationClient.baseUrl),
-		shouldSkipSendingCommitAssociations ? [] : commitSummaries,
+		[],
 		config
 	);
 
