@@ -140,7 +140,7 @@ const webhookRouter = async (context: WebhookContext) => {
 			await GithubWebhookMiddleware(dependabotAlertWebhookHandler)(context);
 			break;
 		case "secret_scanning_alert":
-			await GithubWebhookMiddleware(secretScanningAlertWebhookHandler)(context);
+			await sqsQueues.secret_scanning_alert.sendMessage(payload);
 			break;
 		case "installation":
 			if (context.action === "new_permissions_accepted") {

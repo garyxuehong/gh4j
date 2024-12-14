@@ -8,6 +8,7 @@ import { deploymentQueueMessageHandler } from "./deployment";
 import { branchQueueMessageHandler } from "./branch";
 import { getLogger } from "config/logger";
 import type { BackfillMessagePayload, PushQueueMessagePayload, DeploymentMessagePayload, BranchMessagePayload } from "./sqs.types";
+import { SecretScanningAlertMessagePayload, secretScanningAlertQueueMessageHandler } from "./secret-scanning-alert";
 import { backfillErrorHandler } from "~/src/sqs/backfill-error-handler";
 
 const LONG_POLLING_INTERVAL_SEC = 3;
@@ -74,6 +75,15 @@ export const sqsQueues = {
 	branchQueueMessageHandler,
 	webhookMetricWrapper(jiraAndGitHubErrorsHandler, "create")
 	),
+
+	secret_scanning_alert: new SqsQueue<SecretScanningAlertMessagePayload>({
+		queueName: "secret_scanning_alert",
+		queueUrl: envVars.SQS_SECRET_SCANNING_ALERT_QUEUE_URL,
+		queueRegion: envVars.SQS_SECRET_SCANNING_ALERT_QUEUE_REGION,
+		longPollingIntervalSec: LONG_POLLING_INTERVAL_SEC,
+		timeoutSec: 60,
+		maxAttempts: 5
+	}, secretScanningAlertQueueMessageHandler, webhookMetricWrapper(jiraAndGitHubErrorsHandler, "secret_scanning_alert")),
 
 	start: () => {
 		logger.info("Starting queues");
